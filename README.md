@@ -17,10 +17,6 @@ This system was impletemented for AVSD at DSTC7 where the naive fusion apporoach
 - six
 - java 1.8.0   (for coco-evaluation tools)
 
-## DSTC7 AVSD track data links
-
-   https://github.com/hudaAlamri/DSTC7-Audio-Visual-Scene-Aware-Dialog-AVSD-Challenge
-
 ## How to run the code:
 
    1. Obtain the dialog data files (.json) and store them in `data/`.
