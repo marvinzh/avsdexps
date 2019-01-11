@@ -188,38 +188,7 @@ class MMEncoder(nn.Module):
             c_m = c_m.permute(1,2,0)
             c[m] = c_m.mean(0)
         return c
-
-    def mm_attention(self, g_q, c):
-        wg= self.qest_att(g_q)
-        vs=[]
-        for i in range(self.n_inputs):
-             vs.append(
-                 self.mm_atts[i](c[i]) + wg
-                 )
-
-        # each elems in vs (B, atten_size)
-        for i in range(self.n_inputs):
-            vs[i] = self.mm_att_w(torch.tanh(vs[i]))
-        
-        # each elems in vs (B, 1)
-        vs = torch.cat(vs,dim=1)
-        #  (B, # of modality)
-        beta = torch.softmax(vs, dim=1)
-
-        # (batchsize, #modality)
-        return beta
     
-    def att_modality_fusion(self, c, beta):
-        assert beta.shape[1] == self.n_inputs
-        attended = [None] * self.n_inputs
-
-        beta = beta.permute(1,0)
-        # beta: (# of modality, B)
-        g = 0.
-        for m in range(self.n_inputs):
-            attended[m] = beta[m].view(-1,1) * c[m]
-            g += self.lgd[m](attended[m])
-        return g
 
     # Simple modality fusion
     def simple_modality_fusion(self, c, s):
@@ -252,9 +221,7 @@ class MMEncoder(nn.Module):
         # attention
         c = self.attention(h1, vh1, s)
 
-        beta = self.mm_attention(s, c)
-        g = self.att_modality_fusion(c, beta)
-        # g = self.simple_modality_fusion(c, s)
+        g = self.simple_modality_fusion(c, s)
         
         return torch.tanh(g)
 
